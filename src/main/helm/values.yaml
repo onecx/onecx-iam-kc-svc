@@ -1,0 +1,6 @@
+app:
+  name: kc-svc
+  image:
+    repository: "onecx/onecx-iam-kc-svc"
+  db:
+    enabled: false
