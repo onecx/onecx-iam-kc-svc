@@ -8,13 +8,13 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.resteasy.reactive.RestResponse;
 import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
 import org.tkit.quarkus.log.cdi.LogService;
+import org.tkit.quarkus.rs.context.token.TokenException;
 
 import gen.io.github.onecx.iam.kc.internal.UsersInternalApi;
 import gen.io.github.onecx.iam.kc.internal.model.ProblemDetailResponseDTO;
 import gen.io.github.onecx.iam.kc.internal.model.UserSearchCriteriaDTO;
-import io.github.onecx.iam.kc.common.model.TokenInfo;
-import io.github.onecx.iam.kc.common.service.TokenService;
 import io.github.onecx.iam.kc.domain.service.KeycloakAdminService;
+import io.github.onecx.iam.kc.domain.service.KeycloakException;
 import io.github.onecx.iam.kc.rs.internal.mappers.ExceptionMapper;
 import io.github.onecx.iam.kc.rs.internal.mappers.UserMapper;
 
@@ -31,19 +31,20 @@ public class UsersRestController implements UsersInternalApi {
     @Inject
     ExceptionMapper exceptionMapper;
 
-    @Inject
-    TokenService tokenService;
-
     @Override
     public Response searchUsersByCriteria(UserSearchCriteriaDTO userSearchCriteriaDTO) {
-        TokenInfo tokenInfo = tokenService.getTokenInfo();
-        var criteria = mapper.map(userSearchCriteriaDTO, tokenInfo.realmName());
+        var criteria = mapper.map(userSearchCriteriaDTO);
         var usersPage = adminService.searchUsers(criteria);
         return Response.ok(mapper.map(usersPage)).build();
     }
 
     @ServerExceptionMapper
-    public RestResponse<ProblemDetailResponseDTO> constraint(TokenService.TokenException ex) {
+    public RestResponse<ProblemDetailResponseDTO> constraint(TokenException ex) {
+        return exceptionMapper.exception(ex.getKey(), ex.getMessage());
+    }
+
+    @ServerExceptionMapper
+    public RestResponse<ProblemDetailResponseDTO> constraint(KeycloakException ex) {
         return exceptionMapper.exception(ex);
     }
 

@@ -7,8 +7,6 @@ import lombok.Setter;
 @Setter
 public class UserSearchCriteria {
 
-    private String realmName;
-
     private String query;
 
     private Integer pageNumber = 0;

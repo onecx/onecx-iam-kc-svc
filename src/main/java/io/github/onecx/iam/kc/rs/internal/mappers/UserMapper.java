@@ -19,14 +19,7 @@ import io.github.onecx.iam.kc.domain.model.UserSearchCriteria;
 @Mapper
 public interface UserMapper {
 
-    default UserSearchCriteria map(UserSearchCriteriaDTO dto, String realName) {
-        var result = mapDto(dto);
-        result.setRealmName(realName);
-        return result;
-    }
-
-    @Mapping(target = "realmName", ignore = true)
-    UserSearchCriteria mapDto(UserSearchCriteriaDTO dto);
+    UserSearchCriteria map(UserSearchCriteriaDTO dto);
 
     @Mapping(target = "removeStreamItem", ignore = true)
     UserPageResultDTO map(UserPageResult pageResult);
