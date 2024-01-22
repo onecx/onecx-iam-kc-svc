@@ -15,14 +15,19 @@ import org.mapstruct.Mapping;
 import org.tkit.quarkus.rs.mappers.OffsetDateTimeMapper;
 
 import gen.io.github.onecx.iam.kc.internal.model.*;
-import io.github.onecx.iam.kc.common.service.TokenService;
+import io.github.onecx.iam.kc.domain.service.KeycloakException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Mapper(uses = { OffsetDateTimeMapper.class })
 public abstract class ExceptionMapper {
 
-    public RestResponse<ProblemDetailResponseDTO> exception(TokenService.TokenException ex) {
+    public RestResponse<ProblemDetailResponseDTO> exception(Enum<?> key, String message) {
+        var dto = exception(key.name(), message);
+        return RestResponse.status(Response.Status.BAD_REQUEST, dto);
+    }
+
+    public RestResponse<ProblemDetailResponseDTO> exception(KeycloakException ex) {
         var dto = exception(ErrorKeys.TOKEN_ERROR.name(), ex.getMessage());
         return RestResponse.status(Response.Status.BAD_REQUEST, dto);
     }

@@ -1,7 +1,9 @@
 package io.github.onecx.iam.kc.rs.internal.controllers;
 
+import static io.github.onecx.iam.kc.rs.internal.mappers.ExceptionMapper.ErrorKeys.CONSTRAINT_VIOLATIONS;
 import static io.restassured.RestAssured.given;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.tkit.quarkus.rs.context.token.TokenParserService.ErrorKeys.ERROR_PARSE_TOKEN;
 
 import jakarta.ws.rs.core.Response;
 
@@ -12,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import gen.io.github.onecx.iam.kc.internal.model.ProblemDetailResponseDTO;
 import gen.io.github.onecx.iam.kc.internal.model.UserPageResultDTO;
 import gen.io.github.onecx.iam.kc.internal.model.UserSearchCriteriaDTO;
+import io.github.onecx.iam.kc.rs.internal.mappers.ExceptionMapper;
 import io.github.onecx.iam.kc.test.AbstractTest;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
@@ -68,9 +71,9 @@ class UsersRestControllerTest extends AbstractTest {
                 .extract()
                 .body().as(ProblemDetailResponseDTO.class);
         Assertions.assertNotNull(exception);
-        Assertions.assertEquals("TOKEN_ERROR", exception.getErrorCode());
+        Assertions.assertEquals(ERROR_PARSE_TOKEN.name(), exception.getErrorCode());
         Assertions.assertEquals(
-                "Missing APM principal token",
+                "Error parse raw token",
                 exception.getDetail());
         Assertions.assertNull(exception.getInvalidParams());
 
@@ -90,9 +93,9 @@ class UsersRestControllerTest extends AbstractTest {
                 .extract()
                 .body().as(ProblemDetailResponseDTO.class);
         Assertions.assertNotNull(exception);
-        Assertions.assertEquals("TOKEN_ERROR", exception.getErrorCode());
+        Assertions.assertEquals(ExceptionMapper.ErrorKeys.TOKEN_ERROR.name(), exception.getErrorCode());
         Assertions.assertEquals(
-                "Missing APM principal token",
+                "Principal token is required",
                 exception.getDetail());
         Assertions.assertNull(exception.getInvalidParams());
 
@@ -110,7 +113,7 @@ class UsersRestControllerTest extends AbstractTest {
                 .body().as(ProblemDetailResponseDTO.class);
 
         Assertions.assertNotNull(exception);
-        Assertions.assertEquals("CONSTRAINT_VIOLATIONS", exception.getErrorCode());
+        Assertions.assertEquals(CONSTRAINT_VIOLATIONS.name(), exception.getErrorCode());
         Assertions.assertEquals(
                 "searchUsersByCriteria.userSearchCriteriaDTO: must not be null",
                 exception.getDetail());

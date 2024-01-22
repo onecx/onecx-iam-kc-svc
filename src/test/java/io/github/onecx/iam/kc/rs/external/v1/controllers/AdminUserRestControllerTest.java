@@ -1,5 +1,7 @@
 package io.github.onecx.iam.kc.rs.external.v1.controllers;
 
+import static io.github.onecx.iam.kc.rs.external.v1.mappers.ExceptionMapper.ErrorKeys.CONSTRAINT_VIOLATIONS;
+import static io.github.onecx.iam.kc.rs.external.v1.mappers.ExceptionMapper.ErrorKeys.TOKEN_ERROR;
 import static io.restassured.RestAssured.given;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -78,9 +80,9 @@ class AdminUserRestControllerTest extends AbstractTest {
                 .body().as(ProblemDetailResponseDTO.class);
 
         Assertions.assertNotNull(exception);
-        Assertions.assertEquals("TOKEN_ERROR", exception.getErrorCode());
+        Assertions.assertEquals(TOKEN_ERROR.name(), exception.getErrorCode());
         Assertions.assertEquals(
-                "Missing APM principal token",
+                "Principal token is required",
                 exception.getDetail());
         Assertions.assertNull(exception.getInvalidParams());
     }
@@ -101,7 +103,7 @@ class AdminUserRestControllerTest extends AbstractTest {
                 .body().as(ProblemDetailResponseDTO.class);
 
         Assertions.assertNotNull(exception);
-        Assertions.assertEquals("CONSTRAINT_VIOLATIONS", exception.getErrorCode());
+        Assertions.assertEquals(CONSTRAINT_VIOLATIONS.name(), exception.getErrorCode());
         Assertions.assertEquals(
                 "resetPassword.userResetPasswordRequestDTOV1.password: must not be null",
                 exception.getDetail());
@@ -120,7 +122,7 @@ class AdminUserRestControllerTest extends AbstractTest {
                 .body().as(ProblemDetailResponseDTO.class);
 
         Assertions.assertNotNull(exception);
-        Assertions.assertEquals("CONSTRAINT_VIOLATIONS", exception.getErrorCode());
+        Assertions.assertEquals(CONSTRAINT_VIOLATIONS.name(), exception.getErrorCode());
         Assertions.assertEquals(
                 "resetPassword.userResetPasswordRequestDTOV1: must not be null",
                 exception.getDetail());
