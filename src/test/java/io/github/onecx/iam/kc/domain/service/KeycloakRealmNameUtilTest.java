@@ -7,7 +7,7 @@ import io.github.onecx.iam.kc.test.AbstractTest;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
-public class KeycloakRealmNameUtilTest extends AbstractTest {
+class KeycloakRealmNameUtilTest extends AbstractTest {
 
     @Test
     void realmNameTest() {
