@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>io.github.onecx</groupId>
+        <groupId>org.tkit.onecx</groupId>
         <artifactId>onecx-quarkus3-parent</artifactId>
-        <version>0.26.0</version>
+        <version>0.31.0</version>
     </parent>
 
     <artifactId>onecx-iam-kc-svc</artifactId>
@@ -149,8 +149,8 @@
                   </goals>
                   <configuration>
                     <inputSpec>src/main/openapi/onecx-iam-kc-svc-internal.yaml</inputSpec>
-                    <apiPackage>gen.io.github.onecx.iam.kc.internal</apiPackage>
-                    <modelPackage>gen.io.github.onecx.iam.kc.internal.model</modelPackage>
+                    <apiPackage>gen.org.tkit.onecx.iam.kc.internal</apiPackage>
+                    <modelPackage>gen.org.tkit.onecx.iam.kc.internal.model</modelPackage>
                     <modelNameSuffix>DTO</modelNameSuffix>
                   </configuration>
                 </execution>
@@ -161,8 +161,8 @@
                   </goals>
                   <configuration>
                     <inputSpec>src/main/openapi/onecx-iam-kc-svc-v1.yaml</inputSpec>
-                    <apiPackage>gen.io.github.onecx.iam.kc.v1</apiPackage>
-                    <modelPackage>gen.io.github.onecx.iam.kc.v1.model</modelPackage>
+                    <apiPackage>gen.org.tkit.onecx.iam.kc.v1</apiPackage>
+                    <modelPackage>gen.org.tkit.onecx.iam.kc.v1.model</modelPackage>
                     <modelNameSuffix>DTOV1</modelNameSuffix>
                   </configuration>
                 </execution>
