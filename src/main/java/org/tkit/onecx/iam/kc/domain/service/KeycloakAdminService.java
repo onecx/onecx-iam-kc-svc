@@ -7,9 +7,11 @@ import jakarta.inject.Inject;
 
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.tkit.onecx.iam.kc.domain.model.Page;
-import org.tkit.onecx.iam.kc.domain.model.UserPageResult;
+import org.tkit.onecx.iam.kc.domain.model.PageResult;
+import org.tkit.onecx.iam.kc.domain.model.RoleSearchCriteria;
 import org.tkit.onecx.iam.kc.domain.model.UserSearchCriteria;
 import org.tkit.quarkus.context.ApplicationContext;
 import org.tkit.quarkus.log.cdi.LogExclude;
@@ -40,7 +42,26 @@ public class KeycloakAdminService {
         keycloak.realm(realm).users().get(context.getPrincipal()).resetPassword(resetPassword);
     }
 
-    public UserPageResult searchUsers(UserSearchCriteria criteria) {
+    public PageResult<RoleRepresentation> searchRoles(RoleSearchCriteria criteria) {
+
+        var context = ApplicationContext.get();
+        var principalToken = context.getPrincipalToken();
+        if (principalToken == null) {
+            throw new KeycloakException("Principal token is required");
+        }
+
+        var realm = KeycloakRealmNameUtil.getRealmName(principalToken.getIssuer());
+
+        var first = criteria.getPageNumber() * criteria.getPageSize();
+        var count = 0;
+
+        List<RoleRepresentation> roles = keycloak.realm(realm)
+                .roles().list(criteria.getName(), first, criteria.getPageSize(), true);
+
+        return new PageResult<>(count, roles, Page.of(criteria.getPageNumber(), criteria.getPageSize()));
+    }
+
+    public PageResult<UserRepresentation> searchUsers(UserSearchCriteria criteria) {
 
         var context = ApplicationContext.get();
         var principalToken = context.getPrincipalToken();
@@ -57,7 +78,7 @@ public class KeycloakAdminService {
                 .users()
                 .search(criteria.getQuery(), first, criteria.getPageSize(), true);
 
-        return new UserPageResult(count, users, Page.of(criteria.getPageNumber(), criteria.getPageSize()));
+        return new PageResult<>(count, users, Page.of(criteria.getPageNumber(), criteria.getPageSize()));
     }
 
 }
