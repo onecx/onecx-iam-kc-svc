@@ -9,7 +9,7 @@ import java.util.TimeZone;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.tkit.onecx.iam.kc.domain.model.UserPageResult;
+import org.tkit.onecx.iam.kc.domain.model.PageResult;
 import org.tkit.onecx.iam.kc.domain.model.UserSearchCriteria;
 
 import gen.org.tkit.onecx.iam.kc.internal.model.UserDTO;
@@ -22,7 +22,7 @@ public interface UserMapper {
     UserSearchCriteria map(UserSearchCriteriaDTO dto);
 
     @Mapping(target = "removeStreamItem", ignore = true)
-    UserPageResultDTO map(UserPageResult pageResult);
+    UserPageResultDTO map(PageResult<UserRepresentation> pageResult);
 
     UserDTO map(UserRepresentation user);
 

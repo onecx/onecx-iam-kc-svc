@@ -6,9 +6,36 @@ info:
 servers:
   - url: "http://onecx-iam-kc-svc:8080"
 tags:
+  - name: AdminRoleController
+    description: IAM admin role controller
   - name: AdminUserController
-    description: Keycloak admin controller
+    description: IAM admin controller
 paths:
+  /v1/roles/search:
+    post:
+      tags:
+        - AdminRoleController
+      summary: Search roles by criteria
+      operationId: searchRolesByCriteria
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleSearchCriteria'
+      responses:
+        200:
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/RolePageResult"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailResponse'
   /v1/user/password:
     put:
       tags:
@@ -32,6 +59,48 @@ paths:
                 $ref: '#/components/schemas/ProblemDetailResponse'
 components:
   schemas:
+    RoleSearchCriteria:
+      type: object
+      properties:
+        name:
+          type: string
+        pageNumber:
+          format: int32
+          description: The number of page.
+          default: 0
+          type: integer
+        pageSize:
+          format: int32
+          description: The size of page
+          default: 100
+          type: integer
+    RolePageResult:
+      type: object
+      properties:
+        totalElements:
+          format: int64
+          description: The total elements in the resource.
+          type: integer
+        number:
+          format: int32
+          type: integer
+        size:
+          format: int32
+          type: integer
+        totalPages:
+          format: int64
+          type: integer
+        stream:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
+    Role:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
     UserResetPasswordRequest:
       type: object
       required:

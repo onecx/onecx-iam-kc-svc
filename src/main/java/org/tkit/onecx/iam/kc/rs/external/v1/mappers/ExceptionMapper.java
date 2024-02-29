@@ -24,6 +24,11 @@ import lombok.extern.slf4j.Slf4j;
 @Mapper(uses = { OffsetDateTimeMapper.class })
 public abstract class ExceptionMapper {
 
+    public RestResponse<ProblemDetailResponseDTOV1> exception(Enum<?> key, String message) {
+        var dto = exception(key.name(), message);
+        return RestResponse.status(Response.Status.BAD_REQUEST, dto);
+    }
+
     public RestResponse<ProblemDetailResponseDTOV1> exception(KeycloakException ex) {
         var dto = exception(ErrorKeys.TOKEN_ERROR.name(), ex.getMessage());
         return RestResponse.status(Response.Status.BAD_REQUEST, dto);
