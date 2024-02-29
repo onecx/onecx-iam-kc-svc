@@ -5,6 +5,7 @@ import java.util.List;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
@@ -28,27 +29,20 @@ public class KeycloakAdminService {
 
     public void resetPassword(@LogExclude(mask = "***") String value) {
 
-        var context = ApplicationContext.get();
-        var principalToken = context.getPrincipalToken();
-        if (principalToken == null) {
-            throw new KeycloakException("Principal token is required");
-        }
+        var principalToken = principalToken();
         var realm = KeycloakRealmNameUtil.getRealmName(principalToken.getIssuer());
+        var principal = ApplicationContext.get().getPrincipal();
 
         CredentialRepresentation resetPassword = new CredentialRepresentation();
         resetPassword.setValue(value);
         resetPassword.setType(KeycloakAdminClientConfig.GrantType.PASSWORD.asString());
         resetPassword.setTemporary(false);
-        keycloak.realm(realm).users().get(context.getPrincipal()).resetPassword(resetPassword);
+        keycloak.realm(realm).users().get(principal).resetPassword(resetPassword);
     }
 
     public PageResult<RoleRepresentation> searchRoles(RoleSearchCriteria criteria) {
 
-        var context = ApplicationContext.get();
-        var principalToken = context.getPrincipalToken();
-        if (principalToken == null) {
-            throw new KeycloakException("Principal token is required");
-        }
+        var principalToken = principalToken();
 
         var realm = KeycloakRealmNameUtil.getRealmName(principalToken.getIssuer());
 
@@ -63,11 +57,7 @@ public class KeycloakAdminService {
 
     public PageResult<UserRepresentation> searchUsers(UserSearchCriteria criteria) {
 
-        var context = ApplicationContext.get();
-        var principalToken = context.getPrincipalToken();
-        if (principalToken == null) {
-            throw new KeycloakException("Principal token is required");
-        }
+        var principalToken = principalToken();
 
         var realm = KeycloakRealmNameUtil.getRealmName(principalToken.getIssuer());
 
@@ -81,4 +71,12 @@ public class KeycloakAdminService {
         return new PageResult<>(count, users, Page.of(criteria.getPageNumber(), criteria.getPageSize()));
     }
 
+    private JsonWebToken principalToken() {
+        var context = ApplicationContext.get();
+        var principalToken = context.getPrincipalToken();
+        if (principalToken == null) {
+            throw new KeycloakException("Principal token is required");
+        }
+        return principalToken;
+    }
 }

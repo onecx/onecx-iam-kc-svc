@@ -7,10 +7,6 @@ import lombok.Getter;
 @Getter
 public class PageResult<T> {
 
-    public static PageResult<?> empty() {
-        return new PageResult<>(0, List.of(), Page.of(0, 1));
-    }
-
     private final long totalElements;
 
     private final long number;
@@ -27,10 +23,6 @@ public class PageResult<T> {
         this.number = page.number();
         this.size = page.size();
         this.totalPages = (totalElements + size - 1) / size;
-    }
-
-    public boolean isEmpty() {
-        return totalElements <= 0;
     }
 
     @Override
