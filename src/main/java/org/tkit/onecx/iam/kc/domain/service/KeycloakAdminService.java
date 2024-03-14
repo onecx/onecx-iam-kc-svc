@@ -47,11 +47,10 @@ public class KeycloakAdminService {
         var realm = KeycloakRealmNameUtil.getRealmName(principalToken.getIssuer());
 
         var first = criteria.getPageNumber() * criteria.getPageSize();
-        var count = 0;
 
         List<RoleRepresentation> roles = keycloak.realm(realm)
                 .roles().list(criteria.getName(), first, criteria.getPageSize(), true);
-
+        var count = roles.size();
         return new PageResult<>(count, roles, Page.of(criteria.getPageNumber(), criteria.getPageSize()));
     }
 

@@ -112,6 +112,7 @@ class RolesRestControllerTest extends AbstractTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getStream()).isNotNull().isNotEmpty().hasSize(8);
+        assertThat(result.getTotalElements()).isEqualTo(8);
     }
 
     @Test
