@@ -2,6 +2,7 @@ package org.tkit.onecx.iam.kc.rs.internal.controllers;
 
 import static io.restassured.RestAssured.given;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.tkit.onecx.iam.kc.rs.internal.mappers.ExceptionMapper.ErrorKeys.CONSTRAINT_VIOLATIONS;
 import static org.tkit.quarkus.rs.context.token.TokenParserService.ErrorKeys.ERROR_PARSE_TOKEN;
 
@@ -75,7 +76,7 @@ class UsersRestControllerTest extends AbstractTest {
         Assertions.assertEquals(
                 "Error parse raw token",
                 exception.getDetail());
-        Assertions.assertNull(exception.getInvalidParams());
+        assertThat(exception.getInvalidParams()).isNotNull().isEmpty();
 
     }
 
@@ -97,7 +98,7 @@ class UsersRestControllerTest extends AbstractTest {
         Assertions.assertEquals(
                 "Principal token is required",
                 exception.getDetail());
-        Assertions.assertNull(exception.getInvalidParams());
+        assertThat(exception.getInvalidParams()).isNotNull().isEmpty();
 
     }
 

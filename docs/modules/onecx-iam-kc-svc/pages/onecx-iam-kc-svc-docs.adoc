@@ -1,0 +1,44 @@
+
+include::onecx-iam-kc-svc-attributes.adoc[opts=optional]
+
+=== Default properties
+
+.{properties-file}
+[%collapsible%open]
+====
+[source,properties,subs=attributes+]
+----
+quarkus.keycloak.admin-client.server-url=http://keycloak:8080
+quarkus.keycloak.admin-client.realm=master
+quarkus.keycloak.admin-client.username=admin
+quarkus.keycloak.admin-client.password=admin
+----
+====
+
+=== Extensions
+
+include::onecx-iam-kc-svc-extensions.adoc[opts=optional]
+
+=== Container
+
+{docker-registry}[Docker registry]
+
+
+=== Helm
+
+{helm-registry}[Helm registry]
+
+Default values
+
+.{helm-file}
+[source,yaml]
+----
+app:
+  name: kc-svc
+  image:
+    repository: "onecx/onecx-iam-kc-svc"
+  db:
+    enabled: false
+
+----
+
