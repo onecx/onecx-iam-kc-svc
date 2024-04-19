@@ -41,7 +41,7 @@ class RolesRestControllerTest extends AbstractTest {
         assertThat(exception).isNotNull();
         assertThat(exception.getErrorCode()).isNotNull().isEqualTo(TOKEN_ERROR.name());
         assertThat(exception.getDetail()).isNotNull().isEqualTo("Principal token is required");
-        assertThat(exception.getInvalidParams()).isNull();
+        assertThat(exception.getInvalidParams()).isNotNull().isEmpty();
 
         exception = given()
                 .contentType(APPLICATION_JSON)
@@ -56,7 +56,7 @@ class RolesRestControllerTest extends AbstractTest {
         assertThat(exception).isNotNull();
         assertThat(exception.getErrorCode()).isNotNull().isEqualTo(ERROR_PARSE_TOKEN.name());
         assertThat(exception.getDetail()).isNotNull().isEqualTo("Error parse raw token");
-        assertThat(exception.getInvalidParams()).isNull();
+        assertThat(exception.getInvalidParams()).isNotNull().isEmpty();
 
     }
 

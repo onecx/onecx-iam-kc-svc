@@ -2,6 +2,7 @@ package org.tkit.onecx.iam.kc.rs.external.v1.controllers;
 
 import static io.restassured.RestAssured.given;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.tkit.onecx.iam.kc.rs.external.v1.mappers.ExceptionMapper.ErrorKeys.CONSTRAINT_VIOLATIONS;
 import static org.tkit.onecx.iam.kc.rs.external.v1.mappers.ExceptionMapper.ErrorKeys.TOKEN_ERROR;
 
@@ -84,7 +85,7 @@ class AdminUserRestControllerTest extends AbstractTest {
         Assertions.assertEquals(
                 "Principal token is required",
                 exception.getDetail());
-        Assertions.assertNull(exception.getInvalidParams());
+        assertThat(exception.getInvalidParams()).isNotNull().isEmpty();
     }
 
     @Test
