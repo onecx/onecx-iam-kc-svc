@@ -29,7 +29,7 @@ public class AdminUserRestController implements AdminUserControllerApi {
     @Override
     public Response resetPassword(UserResetPasswordRequestDTOV1 userResetPasswordRequestDTOV1) {
         adminService.resetPassword(userResetPasswordRequestDTOV1.getPassword());
-        return null;
+        return Response.noContent().build();
     }
 
     @ServerExceptionMapper
