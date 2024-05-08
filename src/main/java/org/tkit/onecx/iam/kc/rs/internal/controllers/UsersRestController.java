@@ -16,6 +16,7 @@ import org.tkit.quarkus.rs.context.token.TokenException;
 
 import gen.org.tkit.onecx.iam.kc.internal.UsersInternalApi;
 import gen.org.tkit.onecx.iam.kc.internal.model.ProblemDetailResponseDTO;
+import gen.org.tkit.onecx.iam.kc.internal.model.UserResetPasswordRequestDTO;
 import gen.org.tkit.onecx.iam.kc.internal.model.UserSearchCriteriaDTO;
 
 @LogService
@@ -30,6 +31,12 @@ public class UsersRestController implements UsersInternalApi {
 
     @Inject
     ExceptionMapper exceptionMapper;
+
+    @Override
+    public Response resetPassword(UserResetPasswordRequestDTO userResetPasswordRequestDTO) {
+        adminService.resetPassword(userResetPasswordRequestDTO.getPassword());
+        return Response.noContent().build();
+    }
 
     @Override
     public Response searchUsersByCriteria(UserSearchCriteriaDTO userSearchCriteriaDTO) {

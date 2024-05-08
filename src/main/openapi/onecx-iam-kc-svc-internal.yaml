@@ -34,6 +34,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetailResponse'
+  /internal/users/password:
+    put:
+      tags:
+        - UsersInternal
+      summary: Reset user password
+      operationId: resetPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserResetPasswordRequest'
+      responses:
+        204:
+          description: Reset password succeeded
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailResponse'
   /internal/roles/search:
     post:
       tags:
@@ -113,6 +134,15 @@ components:
           type: string
         email:
           type: string
+    UserResetPasswordRequest:
+      type: object
+      required:
+        - password
+      properties:
+        password:
+          type: string
+          format: password
+          minLength: 1
     ProblemDetailResponse:
       type: object
       properties:
