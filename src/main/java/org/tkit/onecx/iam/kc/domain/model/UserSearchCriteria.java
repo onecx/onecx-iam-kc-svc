@@ -7,7 +7,13 @@ import lombok.Setter;
 @Setter
 public class UserSearchCriteria {
 
-    private String query;
+    private String userName;
+
+    private String firstName;
+
+    private String lastName;
+
+    private String email;
 
     private Integer pageNumber = 0;
 

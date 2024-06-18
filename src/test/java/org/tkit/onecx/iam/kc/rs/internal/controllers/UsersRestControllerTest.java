@@ -40,7 +40,7 @@ class UsersRestControllerTest extends AbstractTest {
     void searchUsersRequest() {
 
         UserSearchCriteriaDTO dto = new UserSearchCriteriaDTO();
-        dto.setQuery("bob");
+        dto.setUserName(i"bob");
 
         var result = given()
                 .contentType(APPLICATION_JSON)
