@@ -62,11 +62,13 @@ public class KeycloakAdminService {
         var realm = KeycloakRealmNameUtil.getRealmName(principalToken.getIssuer());
 
         var first = criteria.getPageNumber() * criteria.getPageSize();
-        var count = keycloak.realm(realm).users().count(criteria.getQuery());
+        var count = keycloak.realm(realm).users().count(criteria.getLastName(), criteria.getFirstName(), criteria.getEmail(),
+                criteria.getUserName());
 
         List<UserRepresentation> users = keycloak.realm(realm)
                 .users()
-                .search(criteria.getQuery(), first, criteria.getPageSize(), true);
+                .search(criteria.getUserName(), criteria.getFirstName(), criteria.getLastName(), criteria.getEmail(), first,
+                        criteria.getPageSize(), null, true);
 
         return new PageResult<>(count, users, Page.of(criteria.getPageNumber(), criteria.getPageSize()));
     }
