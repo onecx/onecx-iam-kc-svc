@@ -5,12 +5,14 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.tkit.onecx.iam.kc.rs.external.v1.mappers.ExceptionMapper.ErrorKeys.TOKEN_ERROR;
 import static org.tkit.quarkus.rs.context.token.TokenParserService.ErrorKeys.ERROR_PARSE_TOKEN;
+import static org.tkit.quarkus.security.test.SecurityTestUtils.getKeycloakClientToken;
 
 import jakarta.ws.rs.core.Response;
 
 import org.junit.jupiter.api.Test;
 import org.tkit.onecx.iam.kc.rs.external.v1.mappers.ExceptionMapper;
 import org.tkit.onecx.iam.kc.test.AbstractTest;
+import org.tkit.quarkus.security.test.GenerateKeycloakClient;
 
 import gen.org.tkit.onecx.iam.kc.internal.model.ProblemDetailResponseDTO;
 import gen.org.tkit.onecx.iam.kc.v1.model.RoleDTOV1;
@@ -22,6 +24,7 @@ import io.quarkus.test.keycloak.client.KeycloakTestClient;
 
 @QuarkusTest
 @TestHTTPEndpoint(AdminRoleRestController.class)
+@GenerateKeycloakClient(clientName = "testClient", scopes = { "ocx-ia:read", "ocx-ia:write" })
 class AdminRoleRestControllerTest extends AbstractTest {
 
     private static final KeycloakTestClient keycloakClient = new KeycloakTestClient();
@@ -30,6 +33,7 @@ class AdminRoleRestControllerTest extends AbstractTest {
     void roleSearchNoTokenTest() {
 
         var exception = given()
+                .auth().oauth2(getKeycloakClientToken("testClient"))
                 .contentType(APPLICATION_JSON)
                 .body(new RoleSearchCriteriaDTOV1())
                 .post()
@@ -44,6 +48,7 @@ class AdminRoleRestControllerTest extends AbstractTest {
         assertThat(exception.getInvalidParams()).isNotNull().isEmpty();
 
         exception = given()
+                .auth().oauth2(getKeycloakClientToken("testClient"))
                 .contentType(APPLICATION_JSON)
                 .header(APM_HEADER_TOKEN, " ")
                 .body(new RoleSearchCriteriaDTOV1())
@@ -64,6 +69,7 @@ class AdminRoleRestControllerTest extends AbstractTest {
     void roleSearchNoBodyTest() {
 
         var exception = given()
+                .auth().oauth2(getKeycloakClientToken("testClient"))
                 .contentType(APPLICATION_JSON)
                 .header(APM_HEADER_TOKEN, keycloakClient.getAccessToken(USER_BOB))
                 .post()
@@ -83,6 +89,7 @@ class AdminRoleRestControllerTest extends AbstractTest {
     void roleSearchEmptyResultTest() {
 
         var result = given()
+                .auth().oauth2(getKeycloakClientToken("testClient"))
                 .contentType(APPLICATION_JSON)
                 .header(APM_HEADER_TOKEN, keycloakClient.getAccessToken(USER_BOB))
                 .body(new RoleSearchCriteriaDTOV1().name("does-not-exists"))
@@ -101,6 +108,7 @@ class AdminRoleRestControllerTest extends AbstractTest {
     void roleSearchAllTest() {
 
         var result = given()
+                .auth().oauth2(getKeycloakClientToken("testClient"))
                 .contentType(APPLICATION_JSON)
                 .header(APM_HEADER_TOKEN, keycloakClient.getAccessToken(USER_BOB))
                 .body(new RoleSearchCriteriaDTOV1())
@@ -118,6 +126,7 @@ class AdminRoleRestControllerTest extends AbstractTest {
     void roleSearchTest() {
 
         var result = given()
+                .auth().oauth2(getKeycloakClientToken("testClient"))
                 .contentType(APPLICATION_JSON)
                 .header(APM_HEADER_TOKEN, keycloakClient.getAccessToken(USER_BOB))
                 .body(new RoleSearchCriteriaDTOV1().name("onecx-admin"))
@@ -132,6 +141,7 @@ class AdminRoleRestControllerTest extends AbstractTest {
                 .hasSize(1).contains(new RoleDTOV1().name("onecx-admin"));
 
         result = given()
+                .auth().oauth2(getKeycloakClientToken("testClient"))
                 .contentType(APPLICATION_JSON)
                 .header(APM_HEADER_TOKEN, keycloakClient.getAccessToken(USER_BOB))
                 .body(new RoleSearchCriteriaDTOV1().name("onecx"))
