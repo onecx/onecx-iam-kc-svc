@@ -11,6 +11,8 @@ tags:
 paths:
   /internal/users/search:
     post:
+      security:
+        - oauth2: [ ocx-ia:all, ocx-ia:read ]
       tags:
         - UsersInternal
       summary: Search users by criteria
@@ -36,6 +38,8 @@ paths:
                 $ref: '#/components/schemas/ProblemDetailResponse'
   /internal/users/password:
     put:
+      security:
+        - oauth2: [ ocx-ia:all, ocx-ia:write ]
       tags:
         - UsersInternal
       summary: Reset user password
@@ -57,6 +61,8 @@ paths:
                 $ref: '#/components/schemas/ProblemDetailResponse'
   /internal/roles/search:
     post:
+      security:
+        - oauth2: [ ocx-ia:all, ocx-ia:read ]
       tags:
         - RolesInternal
       summary: Search roles by criteria
@@ -81,6 +87,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProblemDetailResponse'
 components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://oauth.simple.api/token
+          scopes:
+            ocx-ia:all: Grants access to all operations
+            ocx-ia:read: Grants read access
+            ocx-ia:write: Grants write access
   schemas:
     UserSearchCriteria:
       type: object

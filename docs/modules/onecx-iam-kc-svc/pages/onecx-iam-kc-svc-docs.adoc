@@ -12,6 +12,10 @@ quarkus.keycloak.admin-client.server-url=http://keycloak:8080
 quarkus.keycloak.admin-client.realm=master
 quarkus.keycloak.admin-client.username=admin
 quarkus.keycloak.admin-client.password=admin
+quarkus.http.auth.permission.health.paths=/q/*
+quarkus.http.auth.permission.health.policy=permit
+quarkus.http.auth.permission.default.paths=/*
+quarkus.http.auth.permission.default.policy=authenticated
 ----
 ====
 

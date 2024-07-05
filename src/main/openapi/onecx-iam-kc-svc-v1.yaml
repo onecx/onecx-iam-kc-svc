@@ -13,6 +13,8 @@ tags:
 paths:
   /v1/roles/search:
     post:
+      security:
+        - oauth2: [ ocx-ia:all, ocx-ia:read ]
       tags:
         - AdminRoleController
       summary: Search roles by criteria
@@ -38,6 +40,8 @@ paths:
                 $ref: '#/components/schemas/ProblemDetailResponse'
   /v1/user/password:
     put:
+      security:
+        - oauth2: [ ocx-ia:write ]
       tags:
         - AdminUserController
       summary: user reset password
@@ -58,6 +62,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProblemDetailResponse'
 components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://oauth.simple.api/token
+          scopes:
+            ocx-ia:read: Grants read access
+            ocx-ia:write: Grants write access
   schemas:
     RoleSearchCriteria:
       type: object

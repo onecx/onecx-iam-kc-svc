@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.tkit.onecx.iam.kc.rs.internal.mappers.ExceptionMapper.ErrorKeys.CONSTRAINT_VIOLATIONS;
 import static org.tkit.onecx.iam.kc.rs.internal.mappers.ExceptionMapper.ErrorKeys.TOKEN_ERROR;
 import static org.tkit.quarkus.rs.context.token.TokenParserService.ErrorKeys.ERROR_PARSE_TOKEN;
+import static org.tkit.quarkus.security.test.SecurityTestUtils.getKeycloakClientToken;
 
 import jakarta.ws.rs.core.Response;
 
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.tkit.onecx.iam.kc.rs.internal.mappers.ExceptionMapper;
 import org.tkit.onecx.iam.kc.test.AbstractTest;
+import org.tkit.quarkus.security.test.GenerateKeycloakClient;
 
 import gen.org.tkit.onecx.iam.kc.internal.model.ProblemDetailResponseDTO;
 import gen.org.tkit.onecx.iam.kc.internal.model.UserPageResultDTO;
@@ -25,6 +27,7 @@ import io.quarkus.test.keycloak.client.KeycloakTestClient;
 
 @QuarkusTest
 @TestHTTPEndpoint(UsersRestController.class)
+@GenerateKeycloakClient(clientName = "testClient", scopes = { "ocx-ia:read", "ocx-ia:write", "ocx-ia:all" })
 class UsersRestControllerTest extends AbstractTest {
 
     private static final KeycloakTestClient keycloakClient = new KeycloakTestClient();
@@ -43,6 +46,7 @@ class UsersRestControllerTest extends AbstractTest {
         dto.setUserName("bob");
 
         var result = given()
+                .auth().oauth2(getKeycloakClientToken("testClient"))
                 .contentType(APPLICATION_JSON)
                 .header(APM_HEADER_TOKEN, token)
                 .body(dto)
@@ -65,6 +69,7 @@ class UsersRestControllerTest extends AbstractTest {
         UserSearchCriteriaDTO dto = new UserSearchCriteriaDTO();
 
         var exception = given()
+                .auth().oauth2(getKeycloakClientToken("testClient"))
                 .contentType(APPLICATION_JSON)
                 .header(APM_HEADER_TOKEN, " ")
                 .body(dto)
@@ -88,6 +93,7 @@ class UsersRestControllerTest extends AbstractTest {
         UserSearchCriteriaDTO dto = new UserSearchCriteriaDTO();
 
         var exception = given()
+                .auth().oauth2(getKeycloakClientToken("testClient"))
                 .contentType(APPLICATION_JSON)
                 .body(dto)
                 .post("search")
@@ -108,6 +114,7 @@ class UsersRestControllerTest extends AbstractTest {
     void searchUsersNoRequest() {
 
         var exception = given()
+                .auth().oauth2(getKeycloakClientToken("testClient"))
                 .contentType(APPLICATION_JSON)
                 .post("search")
                 .then()
@@ -131,6 +138,7 @@ class UsersRestControllerTest extends AbstractTest {
         dto.setPassword("changedPassword");
 
         given()
+                .auth().oauth2(getKeycloakClientToken("testClient"))
                 .contentType(APPLICATION_JSON)
                 .header(APM_HEADER_TOKEN, bobToken)
                 .body(dto)
@@ -145,6 +153,7 @@ class UsersRestControllerTest extends AbstractTest {
         dto.setPassword(USER_BOB);
 
         given()
+                .auth().oauth2(getKeycloakClientToken("testClient"))
                 .contentType(APPLICATION_JSON)
                 .header(APM_HEADER_TOKEN, bobToken)
                 .body(dto)
@@ -163,6 +172,7 @@ class UsersRestControllerTest extends AbstractTest {
         dto.setPassword("*******");
 
         var exception = given()
+                .auth().oauth2(getKeycloakClientToken("testClient"))
                 .contentType(APPLICATION_JSON)
                 .body(dto)
                 .put("password")
@@ -185,6 +195,7 @@ class UsersRestControllerTest extends AbstractTest {
         UserResetPasswordRequestDTO dto = new UserResetPasswordRequestDTO();
 
         var exception = given()
+                .auth().oauth2(getKeycloakClientToken("testClient"))
                 .contentType(APPLICATION_JSON)
                 .header(APM_HEADER_TOKEN, token)
                 .body(dto)
@@ -208,6 +219,7 @@ class UsersRestControllerTest extends AbstractTest {
     void resetPasswordNoRequestTest() {
 
         var exception = given()
+                .auth().oauth2(getKeycloakClientToken("testClient"))
                 .contentType(APPLICATION_JSON)
                 .put("password")
                 .then()
