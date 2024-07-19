@@ -9,9 +9,9 @@ public abstract class AbstractTest {
     protected static final String APM_HEADER_TOKEN = "apm-principal-token";
 
     DevServicesContext testContext;
-    public static String CLIENT_ID_PROP = "quarkus.oidc.client-id";
-    public static String USER_BOB = "bob";
-    public static String USER_ALICE = "alice";
+    public static final String CLIENT_ID_PROP = "quarkus.oidc.client-id";
+    public static final String USER_BOB = "bob";
+    public static final String USER_ALICE = "alice";
 
     protected String getClientId() {
         return getPropertyValue(CLIENT_ID_PROP, "quarkus-app");

@@ -1,9 +1,6 @@
 package org.tkit.onecx.iam.kc.rs.internal.mappers;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.util.TimeZone;
 
 import org.keycloak.representations.idm.UserRepresentation;
@@ -33,6 +30,6 @@ public interface UserMapper {
         var tmp = LocalDateTime.ofInstant(Instant.ofEpochMilli(dateTime),
                 TimeZone.getDefault().toZoneId());
 
-        return OffsetDateTime.of(tmp, ZoneOffset.systemDefault().getRules().getOffset(tmp));
+        return OffsetDateTime.of(tmp, ZoneId.systemDefault().getRules().getOffset(tmp));
     }
 }
