@@ -37,7 +37,8 @@ class AdminUserRestControllerTest extends AbstractTest {
 
     @Test
     void resetPasswordTest() {
-        var bobToken = keycloakClient.getAccessToken(USER_BOB);
+        var tokens = this.getTokens(keycloakClient, USER_BOB);
+        var bobToken = tokens.getIdToken();
 
         UserResetPasswordRequestDTOV1 dto = new UserResetPasswordRequestDTOV1();
         dto.setPassword("changedPassword");
@@ -54,7 +55,7 @@ class AdminUserRestControllerTest extends AbstractTest {
         var tmp = keycloakClient.getAccessToken(USER_BOB);
         Assertions.assertNull(tmp);
 
-        bobToken = keycloakClient.getAccessToken(USER_BOB, dto.getPassword(), getClientId());
+        bobToken = getTokens(keycloakClient, USER_BOB, dto.getPassword()).getIdToken();
         dto.setPassword(USER_BOB);
 
         given()
@@ -113,7 +114,7 @@ class AdminUserRestControllerTest extends AbstractTest {
         Assertions.assertNotNull(exception);
         Assertions.assertEquals(CONSTRAINT_VIOLATIONS.name(), exception.getErrorCode());
         Assertions.assertEquals(
-                "resetPassword.userResetPasswordRequestDTOV1.password: must not be null",
+                "userResetPassword.userResetPasswordRequestDTOV1.password: must not be null",
                 exception.getDetail());
         Assertions.assertNotNull(exception.getInvalidParams());
     }
@@ -133,7 +134,7 @@ class AdminUserRestControllerTest extends AbstractTest {
         Assertions.assertNotNull(exception);
         Assertions.assertEquals(CONSTRAINT_VIOLATIONS.name(), exception.getErrorCode());
         Assertions.assertEquals(
-                "resetPassword.userResetPasswordRequestDTOV1: must not be null",
+                "userResetPassword.userResetPasswordRequestDTOV1: must not be null",
                 exception.getDetail());
         Assertions.assertNotNull(exception.getInvalidParams());
     }

@@ -18,7 +18,7 @@ paths:
       tags:
         - AdminRoleController
       summary: Search roles by criteria
-      operationId: searchRolesByCriteria
+      operationId: rolesSearchByCriteria
       requestBody:
         required: true
         content:
@@ -45,7 +45,7 @@ paths:
       tags:
         - AdminUserController
       summary: user reset password
-      operationId: resetPassword
+      operationId: userResetPassword
       requestBody:
         required: true
         content:

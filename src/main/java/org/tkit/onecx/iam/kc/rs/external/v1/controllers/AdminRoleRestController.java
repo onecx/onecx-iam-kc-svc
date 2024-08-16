@@ -32,7 +32,7 @@ public class AdminRoleRestController implements AdminRoleControllerApi {
     KeycloakMapper mapper;
 
     @Override
-    public Response searchRolesByCriteria(RoleSearchCriteriaDTOV1 roleSearchCriteriaDTOV1) {
+    public Response rolesSearchByCriteria(RoleSearchCriteriaDTOV1 roleSearchCriteriaDTOV1) {
         var criteria = mapper.map(roleSearchCriteriaDTOV1);
         var result = adminService.searchRoles(criteria);
         return Response.ok(mapper.map(result)).build();

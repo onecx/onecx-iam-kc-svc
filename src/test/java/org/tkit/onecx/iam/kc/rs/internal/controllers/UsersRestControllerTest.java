@@ -132,8 +132,8 @@ class UsersRestControllerTest extends AbstractTest {
 
     @Test
     void resetPasswordTest() {
-        var bobToken = keycloakClient.getAccessToken(USER_BOB);
-
+        var tokens = this.getTokens(keycloakClient, USER_BOB);
+        var bobToken = tokens.getIdToken();
         UserResetPasswordRequestDTO dto = new UserResetPasswordRequestDTO();
         dto.setPassword("changedPassword");
 
@@ -149,7 +149,7 @@ class UsersRestControllerTest extends AbstractTest {
         var tmp = keycloakClient.getAccessToken(USER_BOB);
         Assertions.assertNull(tmp);
 
-        bobToken = keycloakClient.getAccessToken(USER_BOB, dto.getPassword(), getClientId());
+        bobToken = getTokens(keycloakClient, USER_BOB, dto.getPassword()).getIdToken();
         dto.setPassword(USER_BOB);
 
         given()
