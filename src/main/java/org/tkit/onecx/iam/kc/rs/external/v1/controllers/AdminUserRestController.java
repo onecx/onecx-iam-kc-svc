@@ -27,7 +27,7 @@ public class AdminUserRestController implements AdminUserControllerApi {
     ExceptionMapper exceptionMapper;
 
     @Override
-    public Response resetPassword(UserResetPasswordRequestDTOV1 userResetPasswordRequestDTOV1) {
+    public Response userResetPassword(UserResetPasswordRequestDTOV1 userResetPasswordRequestDTOV1) {
         adminService.resetPassword(userResetPasswordRequestDTOV1.getPassword());
         return Response.noContent().build();
     }

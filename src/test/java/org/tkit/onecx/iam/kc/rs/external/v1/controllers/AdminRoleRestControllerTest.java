@@ -81,7 +81,7 @@ class AdminRoleRestControllerTest extends AbstractTest {
         assertThat(exception).isNotNull();
         assertThat(exception.getErrorCode()).isNotNull().isEqualTo(ExceptionMapper.ErrorKeys.CONSTRAINT_VIOLATIONS.name());
         assertThat(exception.getDetail()).isNotNull()
-                .isEqualTo("searchRolesByCriteria.roleSearchCriteriaDTOV1: must not be null");
+                .isEqualTo("rolesSearchByCriteria.roleSearchCriteriaDTOV1: must not be null");
         assertThat(exception.getInvalidParams()).isNotNull().isNotEmpty();
     }
 
