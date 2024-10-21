@@ -7,16 +7,22 @@ import static org.tkit.onecx.iam.kc.rs.external.v1.mappers.ExceptionMapper.Error
 import static org.tkit.onecx.iam.kc.rs.external.v1.mappers.ExceptionMapper.ErrorKeys.TOKEN_ERROR;
 import static org.tkit.quarkus.security.test.SecurityTestUtils.getKeycloakClientToken;
 
+import java.io.IOException;
+import java.util.Base64;
+
 import jakarta.ws.rs.core.Response;
 
+import org.jose4j.json.internal.json_simple.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import org.tkit.onecx.iam.kc.test.AbstractTest;
 import org.tkit.quarkus.security.test.GenerateKeycloakClient;
 
 import gen.org.tkit.onecx.iam.kc.internal.model.ProblemDetailResponseDTO;
 import gen.org.tkit.onecx.iam.kc.v1.model.UserResetPasswordRequestDTOV1;
+import gen.org.tkit.onecx.iam.kc.v1.model.UserRolesResponseDTOV1;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.keycloak.client.KeycloakTestClient;
@@ -48,7 +54,7 @@ class AdminUserRestControllerTest extends AbstractTest {
                 .contentType(APPLICATION_JSON)
                 .header(APM_HEADER_TOKEN, bobToken)
                 .body(dto)
-                .put()
+                .put("/password")
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
@@ -63,7 +69,7 @@ class AdminUserRestControllerTest extends AbstractTest {
                 .contentType(APPLICATION_JSON)
                 .header(APM_HEADER_TOKEN, bobToken)
                 .body(dto)
-                .put()
+                .put("/password")
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
@@ -81,7 +87,7 @@ class AdminUserRestControllerTest extends AbstractTest {
                 .auth().oauth2(getKeycloakClientToken("testClient"))
                 .contentType(APPLICATION_JSON)
                 .body(dto)
-                .put()
+                .put("/password")
                 .then()
                 .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
                 .extract()
@@ -105,7 +111,7 @@ class AdminUserRestControllerTest extends AbstractTest {
                 .contentType(APPLICATION_JSON)
                 .header(APM_HEADER_TOKEN, token)
                 .body(dto)
-                .put()
+                .put("/password")
                 .then()
                 .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
                 .extract()
@@ -125,7 +131,7 @@ class AdminUserRestControllerTest extends AbstractTest {
         var exception = given()
                 .auth().oauth2(getKeycloakClientToken("testClient"))
                 .contentType(APPLICATION_JSON)
-                .put()
+                .put("/password")
                 .then()
                 .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
                 .extract()
@@ -137,5 +143,28 @@ class AdminUserRestControllerTest extends AbstractTest {
                 "userResetPassword.userResetPasswordRequestDTOV1: must not be null",
                 exception.getDetail());
         Assertions.assertNotNull(exception.getInvalidParams());
+    }
+
+    @Test
+    void getUserRolesTest() throws IOException {
+        var tokens = this.getTokens(keycloakClient, USER_ALICE);
+        var aliceToken = tokens.getIdToken();
+        ObjectMapper mapper = new ObjectMapper();
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+        String[] chunks = aliceToken.split("\\.");
+        String body = new String(decoder.decode(chunks[1]));
+        JSONObject jwt = mapper.readValue(body, JSONObject.class);
+
+        String id = jwt.get("sub").toString();
+
+        var result = given()
+                .auth().oauth2(getKeycloakClientToken("testClient"))
+                .header(APM_HEADER_TOKEN, aliceToken)
+                .contentType(APPLICATION_JSON).get("/roles/" + id)
+                .then().statusCode(Response.Status.OK.getStatusCode())
+                .extract().as(UserRolesResponseDTOV1.class);
+        System.out.println("ROLES: " + result.getRoles());
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(3, result.getRoles().size());
     }
 }

@@ -8,12 +8,10 @@ import jakarta.inject.Inject;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.MappingsRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.tkit.onecx.iam.kc.domain.model.Page;
-import org.tkit.onecx.iam.kc.domain.model.PageResult;
-import org.tkit.onecx.iam.kc.domain.model.RoleSearchCriteria;
-import org.tkit.onecx.iam.kc.domain.model.UserSearchCriteria;
+import org.tkit.onecx.iam.kc.domain.model.*;
 import org.tkit.quarkus.context.ApplicationContext;
 import org.tkit.quarkus.log.cdi.LogExclude;
 import org.tkit.quarkus.log.cdi.LogService;
@@ -71,6 +69,18 @@ public class KeycloakAdminService {
                         criteria.getPageSize(), null, true);
 
         return new PageResult<>(count, users, Page.of(criteria.getPageNumber(), criteria.getPageSize()));
+    }
+
+    public List<RoleRepresentation> getUserRoles(String userId) {
+
+        var principalToken = principalToken();
+
+        var realm = KeycloakRealmNameUtil.getRealmName(principalToken.getIssuer());
+
+        MappingsRepresentation roles = keycloak.realm(realm)
+                .users().get(userId).roles().getAll();
+
+        return roles.getRealmMappings();
     }
 
     private JsonWebToken principalToken() {
