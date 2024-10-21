@@ -10,6 +10,7 @@ import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
 import org.tkit.onecx.iam.kc.domain.service.KeycloakAdminService;
 import org.tkit.onecx.iam.kc.domain.service.KeycloakException;
 import org.tkit.onecx.iam.kc.rs.external.v1.mappers.ExceptionMapper;
+import org.tkit.onecx.iam.kc.rs.external.v1.mappers.KeycloakMapper;
 import org.tkit.quarkus.log.cdi.LogService;
 
 import gen.org.tkit.onecx.iam.kc.v1.AdminUserControllerApi;
@@ -25,6 +26,14 @@ public class AdminUserRestController implements AdminUserControllerApi {
 
     @Inject
     ExceptionMapper exceptionMapper;
+
+    @Inject
+    KeycloakMapper mapper;
+
+    @Override
+    public Response getUserRoles(String userId) {
+        return Response.ok().entity(mapper.map(adminService.getUserRoles(userId))).build();
+    }
 
     @Override
     public Response userResetPassword(UserResetPasswordRequestDTOV1 userResetPasswordRequestDTOV1) {
