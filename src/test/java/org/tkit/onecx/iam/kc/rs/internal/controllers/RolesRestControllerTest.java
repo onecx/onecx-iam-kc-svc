@@ -7,9 +7,15 @@ import static org.tkit.onecx.iam.kc.rs.internal.mappers.ExceptionMapper.ErrorKey
 import static org.tkit.quarkus.rs.context.token.TokenParserService.ErrorKeys.ERROR_PARSE_TOKEN;
 import static org.tkit.quarkus.security.test.SecurityTestUtils.getKeycloakClientToken;
 
+import java.io.IOException;
+import java.util.Base64;
+
 import jakarta.ws.rs.core.Response;
 
+import org.jose4j.json.internal.json_simple.JSONObject;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import org.tkit.onecx.iam.kc.rs.internal.mappers.ExceptionMapper;
 import org.tkit.onecx.iam.kc.test.AbstractTest;
 import org.tkit.quarkus.security.test.GenerateKeycloakClient;
@@ -18,6 +24,7 @@ import gen.org.tkit.onecx.iam.kc.internal.model.ProblemDetailResponseDTO;
 import gen.org.tkit.onecx.iam.kc.internal.model.RoleDTO;
 import gen.org.tkit.onecx.iam.kc.internal.model.RolePageResultDTO;
 import gen.org.tkit.onecx.iam.kc.internal.model.RoleSearchCriteriaDTO;
+import gen.org.tkit.onecx.iam.kc.v1.model.UserRolesResponseDTOV1;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.keycloak.client.KeycloakTestClient;
@@ -36,7 +43,7 @@ class RolesRestControllerTest extends AbstractTest {
                 .auth().oauth2(getKeycloakClientToken("testClient"))
                 .contentType(APPLICATION_JSON)
                 .body(new RoleSearchCriteriaDTO())
-                .post()
+                .post("/search")
                 .then()
                 .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
                 .extract()
@@ -52,7 +59,7 @@ class RolesRestControllerTest extends AbstractTest {
                 .contentType(APPLICATION_JSON)
                 .header(APM_HEADER_TOKEN, " ")
                 .body(new RoleSearchCriteriaDTO())
-                .post()
+                .post("/search")
                 .then()
                 .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
                 .extract()
@@ -72,7 +79,7 @@ class RolesRestControllerTest extends AbstractTest {
                 .auth().oauth2(getKeycloakClientToken("testClient"))
                 .contentType(APPLICATION_JSON)
                 .header(APM_HEADER_TOKEN, keycloakClient.getAccessToken(USER_BOB))
-                .post()
+                .post("/search")
                 .then()
                 .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
                 .extract()
@@ -93,7 +100,7 @@ class RolesRestControllerTest extends AbstractTest {
                 .contentType(APPLICATION_JSON)
                 .header(APM_HEADER_TOKEN, keycloakClient.getAccessToken(USER_BOB))
                 .body(new RoleSearchCriteriaDTO().name("does-not-exists"))
-                .post()
+                .post("/search")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .extract()
@@ -112,7 +119,7 @@ class RolesRestControllerTest extends AbstractTest {
                 .contentType(APPLICATION_JSON)
                 .header(APM_HEADER_TOKEN, keycloakClient.getAccessToken(USER_BOB))
                 .body(new RoleSearchCriteriaDTO())
-                .post()
+                .post("/search")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .extract()
@@ -130,7 +137,7 @@ class RolesRestControllerTest extends AbstractTest {
                 .contentType(APPLICATION_JSON)
                 .header(APM_HEADER_TOKEN, keycloakClient.getAccessToken(USER_BOB))
                 .body(new RoleSearchCriteriaDTO().name("onecx-admin"))
-                .post()
+                .post("/search")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .extract()
@@ -145,7 +152,7 @@ class RolesRestControllerTest extends AbstractTest {
                 .contentType(APPLICATION_JSON)
                 .header(APM_HEADER_TOKEN, keycloakClient.getAccessToken(USER_BOB))
                 .body(new RoleSearchCriteriaDTO().name("onecx"))
-                .post()
+                .post("/search")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .extract()
@@ -159,5 +166,29 @@ class RolesRestControllerTest extends AbstractTest {
                         new RoleDTO().name("onecx-portal-super-admin"),
                         new RoleDTO().name("onecx-test"),
                         new RoleDTO().name("onecx-user"));
+    }
+
+    @Test
+    void getUserRolesTest() throws IOException {
+        var tokens = this.getTokens(keycloakClient, USER_ALICE);
+        var aliceToken = tokens.getIdToken();
+        ObjectMapper mapper = new ObjectMapper();
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+        String[] chunks = aliceToken.split("\\.");
+        String body = new String(decoder.decode(chunks[1]));
+        JSONObject jwt = mapper.readValue(body, JSONObject.class);
+
+        String id = jwt.get("sub").toString();
+
+        var result = given()
+                .auth().oauth2(getKeycloakClientToken("testClient"))
+                .header(APM_HEADER_TOKEN, aliceToken)
+                .pathParam("userId", id)
+                .contentType(APPLICATION_JSON).get("/{userId}")
+                .then().statusCode(Response.Status.OK.getStatusCode())
+                .extract().as(UserRolesResponseDTOV1.class);
+        System.out.println("ROLES: " + result.getRoles());
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(3, result.getRoles().size());
     }
 }
