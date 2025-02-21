@@ -32,6 +32,11 @@ public class RolesRestController implements RolesInternalApi {
     ExceptionMapper exceptionMapper;
 
     @Override
+    public Response getUserRoles(String userId) {
+        return Response.ok().entity(mapper.map(adminService.getUserRoles(userId))).build();
+    }
+
+    @Override
     public Response searchRolesByCriteria(RoleSearchCriteriaDTO roleSearchCriteriaDTO) {
         var criteria = mapper.map(roleSearchCriteriaDTO);
         var result = adminService.searchRoles(criteria);
