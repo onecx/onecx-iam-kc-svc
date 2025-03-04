@@ -1,6 +1,9 @@
 package org.tkit.onecx.iam.kc.rs.internal.mappers;
 
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.TimeZone;
 
 import org.keycloak.representations.idm.UserRepresentation;
@@ -21,6 +24,7 @@ public interface UserMapper {
     @Mapping(target = "removeStreamItem", ignore = true)
     UserPageResultDTO map(PageResult<UserRepresentation> pageResult);
 
+    @Mapping(target = "removeAttributesItem", ignore = true)
     UserDTO map(UserRepresentation user);
 
     default OffsetDateTime map(Long dateTime) {

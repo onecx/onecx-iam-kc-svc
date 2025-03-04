@@ -192,6 +192,12 @@ components:
      type: string
     email:
      type: string
+    attributes:
+     type: object
+     additionalProperties:
+      type: array
+      items:
+       type: string
   UserResetPasswordRequest:
    type: object
    required:
