@@ -11,7 +11,10 @@ import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.MappingsRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.tkit.onecx.iam.kc.domain.model.*;
+import org.tkit.onecx.iam.kc.domain.model.Page;
+import org.tkit.onecx.iam.kc.domain.model.PageResult;
+import org.tkit.onecx.iam.kc.domain.model.RoleSearchCriteria;
+import org.tkit.onecx.iam.kc.domain.model.UserSearchCriteria;
 import org.tkit.quarkus.context.ApplicationContext;
 import org.tkit.quarkus.log.cdi.LogExclude;
 import org.tkit.quarkus.log.cdi.LogService;
@@ -66,7 +69,7 @@ public class KeycloakAdminService {
         List<UserRepresentation> users = keycloak.realm(realm)
                 .users()
                 .search(criteria.getUserName(), criteria.getFirstName(), criteria.getLastName(), criteria.getEmail(), first,
-                        criteria.getPageSize(), null, true);
+                        criteria.getPageSize(), null, false);
 
         return new PageResult<>(count, users, Page.of(criteria.getPageNumber(), criteria.getPageSize()));
     }
