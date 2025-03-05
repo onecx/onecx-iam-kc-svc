@@ -114,6 +114,27 @@ paths:
       application/json:
        schema:
         $ref: '#/components/schemas/ProblemDetailResponse'
+ /internal/realms:
+  get:
+   security:
+    - oauth2: [ ocx-ia:all, ocx-ia:read ]
+   tags:
+    - RealmsInternal
+   summary: Get all realms
+   operationId: getAllRealms
+   responses:
+    200:
+     description: OK
+     content:
+      "application/json":
+       schema:
+        $ref: '#/components/schemas/RealmResponse'
+    400:
+     description: Bad request
+     content:
+      application/json:
+       schema:
+        $ref: '#/components/schemas/ProblemDetailResponse'
 components:
  securitySchemes:
   oauth2:
@@ -126,6 +147,13 @@ components:
       ocx-ia:read: Grants read access
       ocx-ia:write: Grants write access
  schemas:
+  RealmResponse:
+   type: object
+   properties:
+    realms:
+     type: array
+     items:
+      type: string
   UserRolesResponse:
    type: object
    properties:
@@ -141,6 +169,10 @@ components:
     firstName:
      type: string
     lastName:
+     type: string
+    userId:
+     type: string
+    realm:
      type: string
     email:
      type: string
@@ -181,6 +213,8 @@ components:
     id:
      type: string
     origin:
+     type: string
+    realm:
      type: string
     createdTimestamp:
      $ref: '#/components/schemas/OffsetDateTime'
