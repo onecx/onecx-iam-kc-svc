@@ -7,6 +7,7 @@ import java.time.ZoneId;
 import java.util.TimeZone;
 
 import org.keycloak.representations.idm.UserRepresentation;
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.tkit.onecx.iam.kc.domain.model.PageResult;
@@ -22,10 +23,11 @@ public interface UserMapper {
     UserSearchCriteria map(UserSearchCriteriaDTO dto);
 
     @Mapping(target = "removeStreamItem", ignore = true)
-    UserPageResultDTO map(PageResult<UserRepresentation> pageResult);
+    UserPageResultDTO map(PageResult<UserRepresentation> usersPage, @Context String realm);
 
     @Mapping(target = "removeAttributesItem", ignore = true)
-    UserDTO map(UserRepresentation user);
+    @Mapping(target = "realm", expression = "java(realm)")
+    UserDTO map(UserRepresentation user, @Context String realm);
 
     default OffsetDateTime map(Long dateTime) {
         if (dateTime == null) {

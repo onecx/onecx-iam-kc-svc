@@ -42,7 +42,9 @@ public class UsersRestController implements UsersInternalApi {
     public Response searchUsersByCriteria(UserSearchCriteriaDTO userSearchCriteriaDTO) {
         var criteria = mapper.map(userSearchCriteriaDTO);
         var usersPage = adminService.searchUsers(criteria);
-        return Response.ok(mapper.map(usersPage)).build();
+        var realm = userSearchCriteriaDTO.getRealm() != null ? userSearchCriteriaDTO.getRealm()
+                : adminService.getCurrentRealm();
+        return Response.ok(mapper.map(usersPage, realm)).build();
     }
 
     @ServerExceptionMapper

@@ -7,10 +7,7 @@ import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.keycloak.admin.client.Keycloak;
-import org.keycloak.representations.idm.CredentialRepresentation;
-import org.keycloak.representations.idm.MappingsRepresentation;
-import org.keycloak.representations.idm.RoleRepresentation;
-import org.keycloak.representations.idm.UserRepresentation;
+import org.keycloak.representations.idm.*;
 import org.tkit.onecx.iam.kc.domain.model.Page;
 import org.tkit.onecx.iam.kc.domain.model.PageResult;
 import org.tkit.onecx.iam.kc.domain.model.RoleSearchCriteria;
@@ -30,8 +27,7 @@ public class KeycloakAdminService {
 
     public void resetPassword(@LogExclude(mask = "***") String value) {
 
-        var principalToken = principalToken();
-        var realm = KeycloakRealmNameUtil.getRealmName(principalToken.getIssuer());
+        var realm = getCurrentRealm();
         var principal = ApplicationContext.get().getPrincipal();
 
         CredentialRepresentation resetPassword = new CredentialRepresentation();
@@ -42,10 +38,7 @@ public class KeycloakAdminService {
     }
 
     public PageResult<RoleRepresentation> searchRoles(RoleSearchCriteria criteria) {
-
-        var principalToken = principalToken();
-
-        var realm = KeycloakRealmNameUtil.getRealmName(principalToken.getIssuer());
+        var realm = getCurrentRealm();
 
         var first = criteria.getPageNumber() * criteria.getPageSize();
         var count = 0;
@@ -57,10 +50,16 @@ public class KeycloakAdminService {
     }
 
     public PageResult<UserRepresentation> searchUsers(UserSearchCriteria criteria) {
+        var realm = "";
+        if (criteria.getRealm() == null || criteria.getRealm().isBlank()) {
+            realm = getCurrentRealm();
+        } else {
+            realm = criteria.getRealm();
+        }
 
-        var principalToken = principalToken();
-
-        var realm = KeycloakRealmNameUtil.getRealmName(principalToken.getIssuer());
+        if (criteria.getUserId() != null && !criteria.getUserId().isBlank()) {
+            return new PageResult<>(1, List.of(getUserById(criteria.getUserId(), realm)), Page.of(0, 1));
+        }
 
         var first = criteria.getPageNumber() * criteria.getPageSize();
         var count = keycloak.realm(realm).users().count(criteria.getLastName(), criteria.getFirstName(), criteria.getEmail(),
@@ -74,16 +73,26 @@ public class KeycloakAdminService {
         return new PageResult<>(count, users, Page.of(criteria.getPageNumber(), criteria.getPageSize()));
     }
 
-    public List<RoleRepresentation> getUserRoles(String userId) {
+    public UserRepresentation getUserById(String userId, String realm) {
+        return keycloak.realm(realm).users().get(userId).toRepresentation();
+    }
 
+    public String getCurrentRealm() {
         var principalToken = principalToken();
+        return KeycloakRealmNameUtil.getRealmName(principalToken.getIssuer());
+    }
 
-        var realm = KeycloakRealmNameUtil.getRealmName(principalToken.getIssuer());
+    public List<RoleRepresentation> getUserRoles(String userId) {
+        var realm = getCurrentRealm();
 
         MappingsRepresentation roles = keycloak.realm(realm)
                 .users().get(userId).roles().getAll();
 
         return roles.getRealmMappings();
+    }
+
+    public List<String> getRealms() {
+        return keycloak.realms().findAll().stream().map(RealmRepresentation::getRealm).toList();
     }
 
     private JsonWebToken principalToken() {
