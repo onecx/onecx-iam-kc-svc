@@ -1,11 +1,13 @@
 package org.tkit.onecx.iam.kc.domain.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.jboss.resteasy.reactive.ClientWebApplicationException;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.*;
 import org.tkit.onecx.iam.kc.domain.model.Page;
@@ -58,7 +60,7 @@ public class KeycloakAdminService {
         }
 
         if (criteria.getUserId() != null && !criteria.getUserId().isBlank()) {
-            return new PageResult<>(1, List.of(getUserById(criteria.getUserId(), realm)), Page.of(0, 1));
+            return new PageResult<>(1, getUserById(criteria.getUserId(), realm), Page.of(0, 1));
         }
 
         var first = criteria.getPageNumber() * criteria.getPageSize();
@@ -73,8 +75,14 @@ public class KeycloakAdminService {
         return new PageResult<>(count, users, Page.of(criteria.getPageNumber(), criteria.getPageSize()));
     }
 
-    public UserRepresentation getUserById(String userId, String realm) {
-        return keycloak.realm(realm).users().get(userId).toRepresentation();
+    public List<UserRepresentation> getUserById(String userId, String realm) {
+        List<UserRepresentation> users;
+        try {
+            users = List.of(keycloak.realm(realm).users().get(userId).toRepresentation());
+        } catch (ClientWebApplicationException ex) {
+            users = new ArrayList<>();
+        }
+        return users;
     }
 
     public String getCurrentRealm() {

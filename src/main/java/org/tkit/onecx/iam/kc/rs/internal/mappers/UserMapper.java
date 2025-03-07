@@ -7,9 +7,7 @@ import java.time.ZoneId;
 import java.util.TimeZone;
 
 import org.keycloak.representations.idm.UserRepresentation;
-import org.mapstruct.Context;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 import org.tkit.onecx.iam.kc.domain.model.PageResult;
 import org.tkit.onecx.iam.kc.domain.model.UserSearchCriteria;
 
@@ -37,5 +35,10 @@ public interface UserMapper {
                 TimeZone.getDefault().toZoneId());
 
         return OffsetDateTime.of(tmp, ZoneId.systemDefault().getRules().getOffset(tmp));
+    }
+
+    @AfterMapping
+    default void removeServiceAccounts(@MappingTarget UserPageResultDTO dto, PageResult<UserRepresentation> usersPage) {
+        dto.getStream().removeIf(userDTO -> userDTO.getUsername().startsWith("service-account"));
     }
 }
