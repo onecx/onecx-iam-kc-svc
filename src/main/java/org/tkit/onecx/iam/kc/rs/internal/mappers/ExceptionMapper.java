@@ -15,7 +15,9 @@ import org.mapstruct.Mapping;
 import org.tkit.onecx.iam.kc.domain.service.KeycloakException;
 import org.tkit.quarkus.rs.mappers.OffsetDateTimeMapper;
 
-import gen.org.tkit.onecx.iam.kc.internal.model.*;
+import gen.org.tkit.onecx.iam.kc.internal.model.ProblemDetailInvalidParamDTO;
+import gen.org.tkit.onecx.iam.kc.internal.model.ProblemDetailParamDTO;
+import gen.org.tkit.onecx.iam.kc.internal.model.ProblemDetailResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

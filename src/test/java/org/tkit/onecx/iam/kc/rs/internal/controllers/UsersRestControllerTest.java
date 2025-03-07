@@ -133,6 +133,22 @@ class UsersRestControllerTest extends AbstractTest {
         Assertions.assertEquals(1, result.getStream().size());
         Assertions.assertEquals("bob", result.getStream().get(0).getUsername());
 
+        //search non existing user
+        dto.setRealm(result.getStream().get(0).getRealm());
+        dto.setUserId("someId");
+
+        result = given()
+                .auth().oauth2(getKeycloakClientToken("testClient"))
+                .contentType(APPLICATION_JSON)
+                .header(APM_HEADER_TOKEN, token)
+                .body(dto)
+                .post("search")
+                .then()
+                .statusCode(Response.Status.OK.getStatusCode())
+                .extract()
+                .body().as(UserPageResultDTO.class);
+
+        Assertions.assertTrue(result.getStream().isEmpty());
     }
 
     @Test
