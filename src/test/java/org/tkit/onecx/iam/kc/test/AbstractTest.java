@@ -35,6 +35,12 @@ public abstract class AbstractTest {
         return value == null ? defaultValue : value;
     }
 
+    KeycloakTestClient keycloakClient = new KeycloakTestClient();
+
+    protected String getKeycloakClientToken(String clientId) {
+        return keycloakClient.getClientAccessToken(clientId);
+    }
+
     protected AccessTokenResponse getTokens(KeycloakTestClient ktc, String userName) {
         return getTokens(ktc, userName, userName);
     }

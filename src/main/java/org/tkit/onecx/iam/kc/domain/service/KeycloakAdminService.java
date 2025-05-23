@@ -18,7 +18,7 @@ import org.tkit.quarkus.context.ApplicationContext;
 import org.tkit.quarkus.log.cdi.LogExclude;
 import org.tkit.quarkus.log.cdi.LogService;
 
-import io.quarkus.keycloak.admin.client.common.KeycloakAdminClientConfig;
+import io.quarkus.keycloak.admin.client.common.runtime.KeycloakAdminClientConfig;
 
 @LogService
 @ApplicationScoped
