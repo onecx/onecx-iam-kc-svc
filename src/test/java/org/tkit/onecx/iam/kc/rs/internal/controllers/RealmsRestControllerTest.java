@@ -3,7 +3,6 @@ package org.tkit.onecx.iam.kc.rs.internal.controllers;
 import static io.restassured.RestAssured.given;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.tkit.quarkus.security.test.SecurityTestUtils.getKeycloakClientToken;
 
 import jakarta.ws.rs.core.Response;
 

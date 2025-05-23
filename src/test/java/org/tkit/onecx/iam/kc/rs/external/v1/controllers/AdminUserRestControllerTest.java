@@ -5,7 +5,6 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.tkit.onecx.iam.kc.rs.external.v1.mappers.ExceptionMapper.ErrorKeys.CONSTRAINT_VIOLATIONS;
 import static org.tkit.onecx.iam.kc.rs.external.v1.mappers.ExceptionMapper.ErrorKeys.TOKEN_ERROR;
-import static org.tkit.quarkus.security.test.SecurityTestUtils.getKeycloakClientToken;
 
 import java.io.IOException;
 import java.util.Base64;
