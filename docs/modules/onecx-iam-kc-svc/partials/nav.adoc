@@ -1,0 +1,3 @@
+** xref:documentation:onecx-iam-kc-svc:index.adoc[IAM Keycloak service]
+*** External API(s)
+**** xref:documentation:onecx-iam-kc-svc:openapi/onecx-iam-kc-svc-v1.adoc[IAM Keycloak Management V1]
